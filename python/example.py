@@ -1,20 +1,23 @@
-import hopperApi
+import hopper_api
 
-api = hopperApi.HopperApi(hopperApi.HopperDev)
+api = hopper_api.HopperApi(hopper_api.HopperDev)
 
-if not api.checkConnectivity():
+if not api.check_connectivity():
     print("Could not connect!")
     exit()
 
 print("Connected to Hopper!")
 
 # on first run
-app = api.createApp("Hopper", "hoppercloud.net", "https://hoppercloud.net/logo.png", "https://hoppercloud.net/manageSubscription", "info@hoppercloud.net")
+try:
+    app = api.create_app("Hopper", "hoppercloud.net", "https://hoppercloud.net/logo.png", "https://hoppercloud.net/manageSubscription", "info@hoppercloud.net")
+except:
+    pass
 app.update(name = "HopperApp")
-app.generateNewKeys()
+app.generate_new_keys()
 strToStore = app.serialize()
 print(strToStore)
 
 # on each run
-app2 = api.deserializeApp(strToStore)
-print(app.createSubscribeRequest("https://listener.hoppercloud.net?id=123123"))
+app2 = api.deserialize_app(strToStore)
+print(app.create_subscribe_request("https://listener.hoppercloud.net?id=123123"))

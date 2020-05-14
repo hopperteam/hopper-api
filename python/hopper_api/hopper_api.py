@@ -1,8 +1,9 @@
 from hopper_api.app import App
+import requests
 import json
 
 HopperProd = ["https://api.hoppercloud.net/v1", "https://app.hoppercloud.net/subscribe"]
-HopperDev = ["https://dev-api.hoppercloud.net/v1", "https://dev.hoppercloud.net/subscribe"]
+HopperDev = ["https://api-dev.hoppercloud.net/v1", "https://dev.hoppercloud.net/subscribe"]
 
 class HopperApi:
     def __init__(self, hopperEnv):
@@ -14,6 +15,13 @@ class HopperApi:
         return App(self, obj["id"], obj["key"])
     
     def check_connectivity(self):
+        try:
+            res = requests.get(self.baseUrl)
+            if (res.json()["type"]):
+                print("You are using a DEV instance of Hopper! This is not intended for production!")
+        except ConnectionError as e:
+            print(json.dumps(e))
+            return False
         return True
 
     def create_app(self, name, baseUrl, imageUrl, manageUrl, contactEmail, key = None, cert = None):

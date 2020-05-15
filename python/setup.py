@@ -18,5 +18,9 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    install_requires=[
+        'pyjwt',
+        'pyjwt[crypto]'
+    ],
     python_requires='>=3.6',
 )

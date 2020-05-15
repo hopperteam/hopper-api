@@ -1,4 +1,5 @@
 from hopper_api.app import App
+from hopper_api.crypto import *
 import requests
 import json
 
@@ -12,7 +13,7 @@ class HopperApi:
 
     def deserialize_app(self, serialized):
         obj = json.loads(serialized)
-        return App(self, obj["id"], obj["key"])
+        return App(self, obj["id"], decodePrivateKeyBase64(obj["key"]))
     
     def check_connectivity(self):
         try:
@@ -25,7 +26,23 @@ class HopperApi:
         return True
 
     def create_app(self, name, baseUrl, imageUrl, manageUrl, contactEmail, key = None, cert = None):
-        return App(self, "123", "abcd1234")
+        (pub, priv) = generateKeys()
+        res = requests.post(self.baseUrl + '/app', json={
+            "name": name,
+            "baseUrl": baseUrl,
+            "imageUrl": imageUrl,
+            "manageUrl": manageUrl,
+            "contactEmail": contactEmail,
+            "cert": encodeKeyBase64(pub)            
+        })
+
+        if res.status_code != 200:
+            json = res.json()
+            if "reason" in json:
+                raise ConnectionError(res.json()['reason'])
+            raise ConnectionError(json)
+        
+        return App(self, res.json()['id'], priv)
 
     def post_notification(self, subscriptionId, notification):
         return "000000000000000"

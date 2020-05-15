@@ -1,4 +1,6 @@
 import json
+import base64
+from hopper_api.crypto import *
 
 class App:
     def __init__(self, api, id, privateKey):
@@ -10,7 +12,17 @@ class App:
         pass
 
     def create_subscribe_request(self, callback, accountName=None):
-        return self.api.subscribeUrl + "?id=" + self.id + "&content=1234"
+        subReq = {
+            "id": self.id,
+            "callback": callback,
+            "requestedInfos": []
+        }
+        if accountName is not None:
+            subReq['accountName'] = accountName
+
+        encSubReq = sign(subReq, self.privateKey)
+
+        return self.api.subscribeUrl + "?id=" + self.id + "&content=" + encSubReq
 
     def generate_new_keys(self):
         return True
@@ -18,5 +30,5 @@ class App:
     def serialize(self):
         return json.dumps({
             "id": self.id,
-            "key": self.privateKey
+            "key": encodeKeyBase64(self.privateKey)
         })

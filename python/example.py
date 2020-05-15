@@ -1,4 +1,6 @@
 import hopper_api
+import base64
+import traceback
 
 api = hopper_api.HopperApi(hopper_api.HopperDev)
 
@@ -9,15 +11,19 @@ if not api.check_connectivity():
 print("Connected to Hopper!")
 
 # on first run
-try:
-    app = api.create_app("Hopper", "hoppercloud.net", "https://hoppercloud.net/logo.png", "https://hoppercloud.net/manageSubscription", "info@hoppercloud.net")
-except:
-    pass
-app.update(name = "HopperApp")
-app.generate_new_keys()
-strToStore = app.serialize()
-print(strToStore)
+#try:
+#    app = api.create_app("Hopper", "http://localhost", "https://hoppercloud.net/logo.png", "https://hoppercloud.net/manageSubscription", "info@hoppercloud.net")
+#except:
+#    traceback.print_exc()
+#    pass
+#app.update(name = "HopperApp")
+#app.generate_new_keys()
+#strToStore = app.serialize()
+#print(strToStore)
 
 # on each run
-app2 = api.deserialize_app(strToStore)
-print(app.create_subscribe_request("https://listener.hoppercloud.net?id=123123"))
+app2 = api.deserialize_app("""
+{"id": "5ebed346de8776bea3bfc96b", "key": "LS0tLS1CRUdJTiBQUklWQVRFIEtFWS0tLS0tCk1JSUV2UUlCQURBTkJna3Foa2lHOXcwQkFRRUZBQVNDQktjd2dnU2pBZ0VBQW9JQkFRQzMvcTFOdnlCQ3QzTzMKWTVjTGRaN0orbUhWLzBOOUpDc2V5L1JjYkVoT3dJSVdXMDlwRHZndFQ4L3FjU054UElwL3J3OUE0QU1iUU8xTwpDa2ZsdUV4OW90dnpSZzBPbXVkcFJGRHVSYVd6QUo4bUlSS0JadzJhdW9kK1lteG9CWVVmRTRKWWhhQk1oTXhMClU3MFlkTCs0bUNpd1A5WGt4MTRqM3c0WnBrS1pJcDlpMzdLUTBXR29yamV3Q0FmTGQvblBTRlZlWlNPRDIySUwKeWNwV0Q0OXF6TnliV2ladExQeDY1clFGbGUvUVpkNU53YWhsODgwQzhQZXVZY3RCVlNRZHlSOGJybTlVS09kSgoxRkhzVHNQTkp4SDJHWFpLOXVXKytKZTg3VVlNejByaFJnN0hZUGU3VDVrdlpLL0dKcWlydlNTaERZUjMxMGt6Ck9aN0NObHUxQWdNQkFBRUNnZ0VBQjAxalFXZXBkeHhpeWs5NGlpcmozMjVCZmNYQXZ2RzFpR1pkejJFNHlXOVkKZWx5clhTY0w4SGh2YndXSWU1RUVpaWEvZXpxb3hPY2h3K3dpaUZwMUpyTlUrV1c1VlBBTzZSMmQvS2JrK2FLMwpya0szd2t6OXZEdFU3MDRtc1VZdXoxbnQzV2VJUWlFdkhubzNVZ1lvS2NKWU13NkZoYXZuNzVLRnM3em1mYjlSCnhHTml6YjVxMDRJL0VxcTlZRDNGWWZMQlhlUWxOZnBQOVZjd1I0a3NPVnNYOHdLSWhUaWVxRmYxTExhb0V5YUwKL3lBbjNkSVpYdnZQZENRYVU0aVc0bDdoQURuV0I1U2htZGxEVEZZcEFveFhLeHN0Y0MxWFk4NGZkdnJ3eEF0RwpzOUJzK2FOMERoRXhnZjFDcTFtT3JpWnhRMjFjU3pZTlRhZjZxZEIxd1FLQmdRRG1GOHVrQkJvZ1hqSWk1cSthCmNaai9EWmwxRlNOZG43ZkhpWHdVaTNyUU10VmNHL2tNaEx2ZDQ2M3d4OTJUVWZYNEtlVHRFQjBzQzV5R0NhaDYKbHc5bVpYaVlhM0xIb1VtdjE5TklaK0orSmJUQUhsTFNkcElFdkdGbHMrdFphbmk5SmJpMjNBeHBVUStUenlINwo4Mld4cjVQVTFwcy9KK0JqMndma1JNcXNCUUtCZ1FETXRpWHplR3MzUWs3eUpsL09BVVoxdHlOZzlmQ3BiMEk0Ck44aEk5anlWUFBTRTZwMFdZNDVjL3JQd0o1ZHBBejkxeGNFVFZCSDFtalFFL1EyM2RJcVl0M081cVZ3QzVYNisKVmtNUXBLa3BpSnIvSDM0bGhHVzFmZy9XR09tS1QzWVMvVWxhZU5KR0Jid3MwM0JubFZDcEQrNjFlYTF6YXJPZgpNbmhkZi9ldjhRS0JnUURSM0JZeWJFTmdEa253SnpNMnpERmRQNHdkaThBTDNtY0NxVlR3Y0I3OTBiOWtHV2RYCmthQy95cStWRXRYM1RpUG55bDR3RWlocFNkWGpNdC9sbisyOTJRTGJFZlZJT3NVNGlzTDhJVFFsRmtMN2p5eS8KSk1JZGE2dngxTjN0V2Z6eGwzd1gzQys5eHQ5TVV2bU9FUHRKeXZnc2dlaHErL1hmWGFDZkJGZE4rUUtCZ0I3TQplTUU4cU1UVGtSVVZlT3lCZkp4UlJWMWRJeXdhdFJmSUxMWHRkZ2Z0OTh2WGtITEIzN1ZXRExSaEFJS29IbkFWCnBJckg1enZRUzJ0RXR6K1dwUk44NWtoVWxxZEk1OXl6RmJ2M1Nnd1pwVmdrNE5HOExhRTBxaVZIOGpzQTRYN1IKNUt0YjZpYm16ZnpnZ3RUU3ZpUHhaYlNmN2R5amZRckNpU0ZvRTFmQkFvR0FMK1VKRzlOQVNFNVc2Z2g3c1pTUApjeUdFWXl3d3V5ZzB5YkxoaFdpeW9jcWdzL0MxM3I3OTlRemljeFZVZU9mT21pc3Azb1pvek9idnJCT1NEdlBYCllpRGc1OUVJYnNKd2IwbEpIU0dad2swdnhtdHd3Z1F0ZVNLVmYzZ3AzNVFxYU1tZ3c0Y05URERBZzNQcERNczcKK082TTl5TE5zWmdiTm9naVR4cDhOa1U9Ci0tLS0tRU5EIFBSSVZBVEUgS0VZLS0tLS0K"}
+""")
+print(app2.create_subscribe_request("https://listener.hoppercloud.net?id=123123", accountName="Test User"))
+

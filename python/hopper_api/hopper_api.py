@@ -13,7 +13,7 @@ class HopperApi:
 
     def deserialize_app(self, serialized):
         obj = json.loads(serialized)
-        return App(self, obj["id"], decodePrivateKeyBase64(obj["key"]))
+        return App(self, obj["id"], decode_private_key_base64(obj["key"]))
     
     def check_connectivity(self):
         try:
@@ -26,14 +26,14 @@ class HopperApi:
         return True
 
     def create_app(self, name, baseUrl, imageUrl, manageUrl, contactEmail, key = None, cert = None):
-        (pub, priv) = generateKeys()
+        (pub, priv) = generate_keys()
         res = requests.post(self.baseUrl + '/app', json={
             "name": name,
             "baseUrl": baseUrl,
             "imageUrl": imageUrl,
             "manageUrl": manageUrl,
             "contactEmail": contactEmail,
-            "cert": encodeKeyBase64(pub)            
+            "cert": encode_key_base64(pub)            
         })
 
         if res.status_code != 200:

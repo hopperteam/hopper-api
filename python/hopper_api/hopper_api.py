@@ -36,19 +36,43 @@ class HopperApi:
             "cert": encode_key_base64(pub)            
         })
 
+        json = res.json()
         if res.status_code != 200:
-            json = res.json()
             if "reason" in json:
-                raise ConnectionError(res.json()['reason'])
+                raise ConnectionError(json['reason'])
             raise ConnectionError(json)
         
-        return App(self, res.json()['id'], priv)
+        return App(self, json['id'], priv)
 
     def post_notification(self, subscriptionId, notification):
-        return "000000000000000"
+        data = notification.data
+        data['subscription'] = subscriptionId
+        print(json.dumps({
+            'subscriptionId': subscriptionId,
+            'notification': notification.data
+        }))
+        res = requests.post(self.baseUrl + '/notification', json={
+            'subscriptionId': subscriptionId,
+            'notification': notification.data
+        })
+
+        json_res = res.json()
+        if res.status_code != 200:
+            if "reason" in json_res:
+                raise ConnectionError(json_res['reason'])
+            raise ConnectionError(json_res)
+ 
+        return json_res['id']
     
     def update_notification(self, notificationId, notification):
         return True
     
     def delete_notification(self, notificationId):
-        return True
+        res = requests.delete(self.baseUrl + '/notification?id=' + notificationId)
+
+        json_res = res.json()
+        if res.status_code != 200:
+            if "reason" in json_res:
+                raise ConnectionError(json_res['reason'])
+            raise ConnectionError(json_res)
+ 

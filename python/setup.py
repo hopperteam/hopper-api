@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hopper_api",
-    version="0.3.2",
+    version="0.3.3",
     author="The hopper team",
     author_email="info@hoppercloud.net",
     description="Hopper's app API",
@@ -20,7 +20,8 @@ setuptools.setup(
     ],
     install_requires=[
         'pyjwt',
-        'pyjwt[crypto]'
+        'cryptography',
+        'requests'
     ],
     python_requires='>=3.6',
 )

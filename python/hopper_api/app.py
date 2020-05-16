@@ -23,6 +23,8 @@ class App:
 
     
     def update(self, name: str = None, imageUrl: str = None, manageUrl: str = None, contactEmail: str = None):
+        """Updates the app's metadata at Hopper"""
+        
         data = {}
         if name is not None:
             data['name'] = name
@@ -40,6 +42,11 @@ class App:
 
     
     def create_subscribe_request(self, callback: str, accountName: str=None) -> str:
+        """Create a subscription request
+
+           Returns: A url to which the user has to be forwarded
+        """
+        
         subReq = {
             "id": self.id,
             "callback": callback,
@@ -54,6 +61,8 @@ class App:
 
 
     def generate_new_keys(self):
+        """Generates new keys for this App and update them at Hopper"""
+
         (pub, priv) = generate_keys()
         self.__send_update({
             "cert": encode_key_base64(pub)
@@ -63,6 +72,11 @@ class App:
 
 
     def serialize(self) -> str:
+        """Serialize this App into a JSON-String
+
+           Returns: The serialized app as string
+        """
+
         return json.dumps({
             "id": self.id,
             "key": encode_key_base64(self.privateKey)

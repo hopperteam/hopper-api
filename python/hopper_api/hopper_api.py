@@ -8,17 +8,29 @@ HopperProd = ["https://api.hoppercloud.net/v1", "https://app.hoppercloud.net/sub
 HopperDev = ["https://api-dev.hoppercloud.net/v1", "https://dev.hoppercloud.net/subscribe"]
 
 class HopperApi:
+    """API Connection to all Hopper related tasks"""
+    
     def __init__(self, hopperEnv):
         self.baseUrl = hopperEnv[0]
         self.subscribeUrl = hopperEnv[1]
 
 
     def deserialize_app(self, serialized: str) -> App:
+        """Convert a JSON-Serialized app into an actual App
+
+           Returns: The deserialized App's object
+        """
+
         obj = json.loads(serialized)
         return App(self, obj["id"], decode_private_key_base64(obj["key"]))
 
     
     def check_connectivity(self) -> bool:
+        """Checks whether Hopper can be reached with the current parameters
+
+           Returns: Whether the check was successful
+        """
+
         try:
             res = requests.get(self.baseUrl)
             if (res.json()["type"]):
@@ -30,6 +42,11 @@ class HopperApi:
 
 
     def create_app(self, name: str, baseUrl: str, imageUrl: str, manageUrl: str, contactEmail: str) -> App:
+        """Creates an App and registers it with hopper
+
+           Returns: The registed App's object
+        """
+
         (pub, priv) = generate_keys()
         res = requests.post(self.baseUrl + '/app', json={
             "name": name,
@@ -50,6 +67,11 @@ class HopperApi:
 
 
     def post_notification(self, subscriptionId: str, notification: Notification) -> str:
+        """Posts a notification on the given subscription
+
+           Returns: The Id of the posted notification
+        """
+
         data = notification.data
         data['subscription'] = subscriptionId
         print(json.dumps({
@@ -71,6 +93,8 @@ class HopperApi:
 
     
     def update_notification(self, notificationId: str, heading: str=None, timestamp: str=None, imageUrl: str=None, isDone: str=None, isSilent: str=None, content: str=None, actions: [Action]=None):
+        """Updates an already posted notification"""
+        
         data = {}
         if heading is not None:
             data['heading'] = heading
@@ -107,6 +131,7 @@ class HopperApi:
 
             
     def delete_notification(self, notificationId: str):
+        """Deletes an already posted notification"""
         res = requests.delete(self.baseUrl + '/notification?id=' + notificationId)
 
         json_res = res.json()

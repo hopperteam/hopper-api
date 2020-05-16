@@ -32,3 +32,4 @@ not_id = api.post_notification('key', hopper_api.Notification.default('TestTest'
 ]))
 api.update_notification(not_id, heading="Updated!!", imageUrl="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/SNice.svg/220px-SNice.svg.png")
 api.delete_notification(not_id)
+

@@ -73,11 +73,7 @@ class HopperApi:
         """
 
         data = notification.data
-        data['subscription'] = subscriptionId
-        print(json.dumps({
-            'subscriptionId': subscriptionId,
-            'notification': notification.data
-        }))
+        
         res = requests.post(self.baseUrl + '/notification', json={
             'subscriptionId': subscriptionId,
             'notification': notification.data

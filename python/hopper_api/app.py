@@ -48,7 +48,6 @@ class App:
         """
         
         subReq = {
-            "id": self.id,
             "callback": callback,
             "requestedInfos": []
         }

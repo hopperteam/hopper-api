@@ -64,9 +64,42 @@ class HopperApi:
  
         return json_res['id']
     
-    def update_notification(self, notificationId, notification):
-        return True
-    
+    def update_notification(self, notificationId, heading=None, timestamp=None, imageUrl=None, isDone=None, isSilent=None, content=None, actions=None):
+        data = {}
+        if heading is not None:
+            data['heading'] = heading
+
+        if timestamp is not None:
+            data['timestamp'] = timestamp
+
+        if imageUrl is not None:
+            data['imageUrl'] = imageUrl
+
+        if isDone is not None:
+            data['isDone'] = isDone
+
+        if isSilent is not None:
+            data['isSilent'] = isSilent
+
+        if content is not None:
+            data['content'] =  content
+ 
+        if actions is not None:
+            data['actions'] = actions
+
+
+        res = requests.put(self.baseUrl + '/notification', json={
+            "id": notificationId,
+            "notification": data
+        })
+
+        json_res = res.json()
+        if res.status_code != 200:
+            if "reason" in json_res:
+                raise ConnectionError(json_res['reason'])
+            raise ConnectionError(json_res)
+
+            
     def delete_notification(self, notificationId):
         res = requests.delete(self.baseUrl + '/notification?id=' + notificationId)
 

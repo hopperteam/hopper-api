@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="hopper_api",
-    version="0.0.2",
+    version="0.3.0",
     author="The hopper team",
     author_email="info@hoppercloud.net",
     description="Hopper's app API",

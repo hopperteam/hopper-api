@@ -9,13 +9,20 @@ class App:
         self.id = id
         self.privateKey = privateKey
 
+
     def __send_update(self, data):
-        requests.put(self.api.baseUrl + '/app', json={
+        res = requests.put(self.api.baseUrl + '/app', json={
             "id": self.id, 
             "content": sign(data, self.privateKey)
         })
+        json_res = res.json()
+        if res.status_code != 200:
+            if "reason" in json_res:
+                raise ConnectionError(json_res['reason'])
+            raise ConnectionError(json_res)
+
     
-    def update(self, name = None, imageUrl = None, manageUrl = None, contactEmail = None):
+    def update(self, name: str = None, imageUrl: str = None, manageUrl: str = None, contactEmail: str = None):
         data = {}
         if name is not None:
             data['name'] = name
@@ -30,8 +37,9 @@ class App:
             data['contactEmail'] = contactEmail
 
         self.__send_update(data)
+
     
-    def create_subscribe_request(self, callback, accountName=None):
+    def create_subscribe_request(self, callback: str, accountName: str=None) -> str:
         subReq = {
             "id": self.id,
             "callback": callback,
@@ -44,6 +52,7 @@ class App:
 
         return self.api.subscribeUrl + "?id=" + self.id + "&content=" + encSubReq
 
+
     def generate_new_keys(self):
         (pub, priv) = generate_keys()
         self.__send_update({
@@ -52,7 +61,8 @@ class App:
         self.privateKey = priv
         return True
 
-    def serialize(self):
+
+    def serialize(self) -> str:
         return json.dumps({
             "id": self.id,
             "key": encode_key_base64(self.privateKey)

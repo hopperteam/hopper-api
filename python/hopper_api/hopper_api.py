@@ -1,5 +1,6 @@
 from hopper_api.app import App
 from hopper_api.crypto import *
+from hopper_api.notification import Notification, Action
 import requests
 import json
 
@@ -11,11 +12,13 @@ class HopperApi:
         self.baseUrl = hopperEnv[0]
         self.subscribeUrl = hopperEnv[1]
 
-    def deserialize_app(self, serialized):
+
+    def deserialize_app(self, serialized: str) -> App:
         obj = json.loads(serialized)
         return App(self, obj["id"], decode_private_key_base64(obj["key"]))
+
     
-    def check_connectivity(self):
+    def check_connectivity(self) -> bool:
         try:
             res = requests.get(self.baseUrl)
             if (res.json()["type"]):
@@ -25,7 +28,8 @@ class HopperApi:
             return False
         return True
 
-    def create_app(self, name, baseUrl, imageUrl, manageUrl, contactEmail, key = None, cert = None):
+
+    def create_app(self, name: str, baseUrl: str, imageUrl: str, manageUrl: str, contactEmail: str) -> App:
         (pub, priv) = generate_keys()
         res = requests.post(self.baseUrl + '/app', json={
             "name": name,
@@ -44,7 +48,8 @@ class HopperApi:
         
         return App(self, json['id'], priv)
 
-    def post_notification(self, subscriptionId, notification):
+
+    def post_notification(self, subscriptionId: str, notification: Notification) -> str:
         data = notification.data
         data['subscription'] = subscriptionId
         print(json.dumps({
@@ -63,8 +68,9 @@ class HopperApi:
             raise ConnectionError(json_res)
  
         return json_res['id']
+
     
-    def update_notification(self, notificationId, heading=None, timestamp=None, imageUrl=None, isDone=None, isSilent=None, content=None, actions=None):
+    def update_notification(self, notificationId: str, heading: str=None, timestamp: str=None, imageUrl: str=None, isDone: str=None, isSilent: str=None, content: str=None, actions: [Action]=None):
         data = {}
         if heading is not None:
             data['heading'] = heading
@@ -100,7 +106,7 @@ class HopperApi:
             raise ConnectionError(json_res)
 
             
-    def delete_notification(self, notificationId):
+    def delete_notification(self, notificationId: str):
         res = requests.delete(self.baseUrl + '/notification?id=' + notificationId)
 
         json_res = res.json()

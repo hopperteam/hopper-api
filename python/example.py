@@ -22,7 +22,7 @@ print(strToStore)
 
 # on each run
 
-print(app2.create_subscribe_request("https://listener.hoppercloud.net?id=123123", accountName="Test User"))
+print(app.create_subscribe_request("https://listener.hoppercloud.net?id=123123", accountName="Test User"))
 
 ### after key received
 

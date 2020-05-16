@@ -25,7 +25,7 @@ class Notification:
         print(timestamp)
 
 
-    def isDone(self, val: bool) -> 'Notification':
+    def is_done(self, val: bool) -> 'Notification':
         """Sets isDone
 
            Returns: The updated notification
@@ -35,7 +35,7 @@ class Notification:
         return self
         
 
-    def isSilent(self, val: bool) -> 'Notification':
+    def is_silent(self, val: bool) -> 'Notification':
         """Sets isSilent
 
            Returns: The updated notification
@@ -116,7 +116,7 @@ class Action:
         }
 
     
-    def markAsDone(self, val: bool) -> 'Action':
+    def mark_as_done(self, val: bool) -> 'Action':
         """Sets whether triggering the action marks the notification as done
 
            Returns: The updated notification

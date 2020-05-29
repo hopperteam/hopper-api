@@ -69,6 +69,25 @@ func (app *App) Update(params *AppUpdateParams) error {
 	return apiJsonRequest(http.MethodPut, app.api.baseUrl + "/app", data, apiResp)
 }
 
+func (app *App) GenerateNewKeys() error {
+	key, err := createKey()
+	if err != nil {
+		return err
+	}
+
+	certStr := encodeKey(&key.PublicKey)
+	err = app.Update(&AppUpdateParams{
+		cert: &certStr,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	app.PrivateKey = key
+	return nil
+}
+
 func (app *App) CreateSubscribeRequest(callback string, accountName *string) (string, error) {
 	subReq := SubscribeRequest{
 		StandardClaims: jwt.StandardClaims{},

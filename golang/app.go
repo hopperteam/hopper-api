@@ -7,19 +7,21 @@ import (
 	"net/http"
 )
 
+// Represents a single app in Hopper
 type App struct {
 	api        *HopperApi
 	Id         string
 	PrivateKey *rsa.PrivateKey
 }
 
-type SubscribeRequest struct {
+type subscribeRequest struct {
 	jwt.StandardClaims
 	Callback       string   `json:"callback"`
 	RequestedInfos []string `json:"requestedInfos"`
 	AccountName    *string  `json:"accountName"`
 }
 
+// Params to update an app
 type AppUpdateParams struct {
 	Name *string
 	ImageUrl *string
@@ -33,6 +35,7 @@ type updateAppRequest struct {
 	Content string `json:"content"`
 }
 
+// Updates the app's metadata at Hopper
 func (app *App) Update(params *AppUpdateParams) error {
 	update := jwt.MapClaims{}
 
@@ -69,6 +72,7 @@ func (app *App) Update(params *AppUpdateParams) error {
 	return apiJsonRequest(http.MethodPut, app.api.baseUrl + "/app", data, apiResp)
 }
 
+// Generates new keys for this App and update them at Hopper
 func (app *App) GenerateNewKeys() error {
 	key, err := createKey()
 	if err != nil {
@@ -88,8 +92,9 @@ func (app *App) GenerateNewKeys() error {
 	return nil
 }
 
+// Create a subscription request
 func (app *App) CreateSubscribeRequest(callback string, accountName *string) (string, error) {
-	subReq := SubscribeRequest{
+	subReq := subscribeRequest{
 		StandardClaims: jwt.StandardClaims{},
 		Callback:       callback,
 		RequestedInfos: make([]string, 0),
@@ -105,6 +110,7 @@ func (app *App) CreateSubscribeRequest(callback string, accountName *string) (st
 
 }
 
+// Serialize this App into a JSON-String
 func (app *App) Serialize() (string, error) {
 	data, err := json.Marshal(app)
 	if err != nil {

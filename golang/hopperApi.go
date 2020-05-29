@@ -13,15 +13,18 @@ import (
 	"net/http"
 )
 
+// API Endpoint Definition
 type HopperApiDefinition struct {
 	baseUrl      string
 	subscribeUrl string
 }
 
+// API Connection to all Hopper related tasks
 type HopperApi struct {
 	HopperApiDefinition
 }
 
+// Update for a Notification
 type NotificationUpdate struct {
 	Heading *string
 	Timestamp *int64
@@ -70,14 +73,17 @@ type updateNotificationRequest struct {
 	Notification map[string]interface{} `json:"notification"`
 }
 
+// Returns a pointer to the given string
 func StrPtr(s string) *string {
 	return &s
 }
 
+// Returns a pointer to the given int64
 func IntPtr(i int64) *int64 {
 	return &i
 }
 
+// Returns a pointer to the given bool
 func BoolPtr(b bool) *bool {
 	return &b
 }
@@ -163,13 +169,18 @@ func apiJsonRequest(method string, url string, reqBody interface{}, result inter
 	return err
 }
 
+// Production instance of Hopper
 var HopperProd = HopperApiDefinition{"https://api.hoppercloud.net/v1", "https://app.hoppercloud.net/subscribe"}
+
+// Development instance of Hopper
 var HopperDev = HopperApiDefinition{"https://api-dev.hoppercloud.net/v1", "https://dev.hoppercloud.net/subscribe"}
 
+// Creates an API connection from the given specification
 func CreateHopperApi(apiDef HopperApiDefinition) *HopperApi {
 	return &HopperApi{HopperApiDefinition: apiDef}
 }
 
+// Convert a JSON-Serialized app into an actual App
 func (api *HopperApi) DeserializeApp(data string) (*App, error) {
 	app := &App{}
 	err := json.Unmarshal([]byte(data), app)
@@ -177,6 +188,7 @@ func (api *HopperApi) DeserializeApp(data string) (*App, error) {
 	return app, err
 }
 
+// Checks whether Hopper can be reached with the current parameters
 func (api *HopperApi) CheckConnectivity() (bool, error) {
 	respObj := &versionResponse{}
 	err := apiPlainRequest(http.MethodGet, api.baseUrl + "/", respObj)
@@ -184,6 +196,7 @@ func (api *HopperApi) CheckConnectivity() (bool, error) {
 	return err == nil, err
 }
 
+// Creates an App and registers it with hopper
 func (api *HopperApi) CreateApp(name string, baseUrl string, imageUrl string, manageUrl string, contactEmail string) (*App, error) {
 	key, err := createKey()
 	if err != nil {
@@ -211,6 +224,7 @@ func (api *HopperApi) CreateApp(name string, baseUrl string, imageUrl string, ma
 	return &App{api: api, Id: apiResp.Id, PrivateKey: key}, nil
 }
 
+// Posts a notification on the given subscription
 func (api *HopperApi) PostNotification(subscriptionId string, notification *Notification) (string, error) {
 	data := postNotificationRequest{
 		SubscriptionId: subscriptionId,
@@ -226,6 +240,7 @@ func (api *HopperApi) PostNotification(subscriptionId string, notification *Noti
 	return apiResp.Id, nil
 }
 
+// Updates an already posted notification
 func (api *HopperApi) UpdateNotification(notificationId string, params *NotificationUpdate) error {
 	update := make(map[string]interface{})
 
@@ -265,6 +280,7 @@ func (api *HopperApi) UpdateNotification(notificationId string, params *Notifica
 	return apiJsonRequest(http.MethodPut, api.baseUrl + "/notification", data, apiResp)
 }
 
+// Deletes an already posted notification
 func (api *HopperApi) DeleteNotification(notificationId string) error {
 	return apiPlainRequest(http.MethodDelete, api.baseUrl + "/app?Id=" + notificationId, &apiResponse{})
 }

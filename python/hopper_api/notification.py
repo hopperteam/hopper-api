@@ -4,7 +4,7 @@ from datetime import timezone
 class Notification:
     @staticmethod
     def default(heading: str, content: str) -> 'Notification':
-        """Creates a default notification with the given paramenters
+        """Creates a default notification with the given parameters
         
            Returns: The created Notification
         """

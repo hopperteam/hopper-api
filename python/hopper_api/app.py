@@ -65,7 +65,7 @@ class App:
         (pub, priv) = generate_keys()
         self.__send_update({
             "cert": encode_key_base64(pub)
-        });
+        })
         self.privateKey = priv
         return True
 

@@ -13,7 +13,7 @@ type Notification struct {
 }
 
 func DefaultNotification(heading string, content string) *Notification {
-	return &Notification{"default", heading, content, time.Now().Unix(), false, false, make([]Action, 0)}
+	return &Notification{"default", heading, content, time.Now().Unix()*1000, false, false, make([]Action, 0)}
 }
 
 func (not *Notification) IsDone(val bool) *Notification {

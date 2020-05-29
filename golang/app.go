@@ -4,6 +4,7 @@ import (
 	"crypto/rsa"
 	"encoding/json"
 	"github.com/dgrijalva/jwt-go"
+	"net/http"
 )
 
 type App struct {
@@ -19,6 +20,55 @@ type SubscribeRequest struct {
 	AccountName    *string  `json:"accountName"`
 }
 
+type AppUpdateParams struct {
+	Name *string
+	ImageUrl *string
+	ManageUrl *string
+	ContactEmail *string
+	cert *string
+}
+
+type updateAppRequest struct {
+	Id string `json:"id"`
+	Content string `json:"content"`
+}
+
+func (app *App) Update(params *AppUpdateParams) error {
+	update := jwt.MapClaims{}
+
+	if params.Name != nil {
+		update["name"] = params.Name
+	}
+
+	if params.ImageUrl != nil {
+		update["imageUrl"] = params.ImageUrl
+	}
+
+	if params.ManageUrl != nil {
+		update["manageUrl"] = params.ManageUrl
+	}
+
+	if params.ContactEmail != nil {
+		update["contactEmail"] = params.ContactEmail
+	}
+
+	if params.cert != nil {
+		update["cert"] = params.cert
+	}
+
+	encUpdate, err := jwt.NewWithClaims(jwt.SigningMethodRS256, update).SignedString(app.PrivateKey)
+	if err != nil {
+		return err
+	}
+
+	data := updateAppRequest{
+		Id:      app.Id,
+		Content: encUpdate,
+	}
+	apiResp := &apiResponse{}
+	return apiJsonRequest(http.MethodPut, app.api.baseUrl + "/app", data, apiResp)
+}
+
 func (app *App) CreateSubscribeRequest(callback string, accountName *string) (string, error) {
 	subReq := SubscribeRequest{
 		StandardClaims: jwt.StandardClaims{},
@@ -32,7 +82,7 @@ func (app *App) CreateSubscribeRequest(callback string, accountName *string) (st
 		return "", nil
 	}
 	return app.api.subscribeUrl +
-		"?Id=" + app.Id + "&content=" + encSubReq, nil
+		"?id=" + app.Id + "&content=" + encSubReq, nil
 
 }
 

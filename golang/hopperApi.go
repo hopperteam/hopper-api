@@ -22,6 +22,16 @@ type HopperApi struct {
 	HopperApiDefinition
 }
 
+type NotificationUpdate struct {
+	Heading *string
+	Timestamp *int64
+	ImageUrl *string
+	IsDone *bool
+	IsSilent *bool
+	Content *string
+	Actions *[]Action
+}
+
 type versionResponse struct {
 	Version string `json:"version"`
 	Type    string `json:"type"`
@@ -53,6 +63,23 @@ type postAppRequest struct {
 type postNotificationRequest struct {
 	SubscriptionId string `json:"subscriptionId"`
 	Notification *Notification `json:"notification"`
+}
+
+type updateNotificationRequest struct {
+	Id string `json:"id"`
+	Notification map[string]interface{} `json:"notification"`
+}
+
+func StrPtr(s string) *string {
+	return &s
+}
+
+func IntPtr(i int64) *int64 {
+	return &i
+}
+
+func BoolPtr(b bool) *bool {
+	return &b
 }
 
 func createKey() (*rsa.PrivateKey, error) {
@@ -190,13 +217,52 @@ func (api *HopperApi) PostNotification(subscriptionId string, notification *Noti
 		Notification: notification,
 	}
 	apiResp := &apiIdResponse{}
-	err := apiJsonRequest(http.MethodPost, api.baseUrl + "/app", data, apiResp)
+	err := apiJsonRequest(http.MethodPost, api.baseUrl + "/notification", data, apiResp)
 
 	if err != nil {
 		return "", err
 	}
 
 	return apiResp.Id, nil
+}
+
+func (api *HopperApi) UpdateNotification(notificationId string, params *NotificationUpdate) error {
+	update := make(map[string]interface{})
+
+	if params.Heading != nil {
+		update["heading"] = params.Heading
+	}
+
+	if params.Timestamp != nil {
+		update["timestamp"] = params.Timestamp
+	}
+
+	if params.ImageUrl != nil {
+		update["imageUrl"] = params.ImageUrl
+	}
+
+	if params.IsDone != nil {
+		update["isDone"] = params.IsDone
+	}
+
+	if params.IsSilent != nil {
+		update["isSilent"] = params.IsSilent
+	}
+
+	if params.Content != nil {
+		update["content"] = params.Content
+	}
+
+	if params.Actions != nil {
+		update["actions"] = params.Actions
+	}
+
+	data := updateNotificationRequest{
+		Id:      notificationId,
+		Notification: update,
+	}
+	apiResp := &apiResponse{}
+	return apiJsonRequest(http.MethodPut, api.baseUrl + "/notification", data, apiResp)
 }
 
 func (api *HopperApi) DeleteNotification(notificationId string) error {

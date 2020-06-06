@@ -1,4 +1,4 @@
-module github.com/hopperteam/hopper-api/go
+module github.com/hopperteam/hopper-api/golang
 
 go 1.13
 

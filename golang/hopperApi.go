@@ -282,5 +282,5 @@ func (api *HopperApi) UpdateNotification(notificationId string, params *Notifica
 
 // Deletes an already posted notification
 func (api *HopperApi) DeleteNotification(notificationId string) error {
-	return apiPlainRequest(http.MethodDelete, api.baseUrl + "/app?Id=" + notificationId, &apiResponse{})
+	return apiPlainRequest(http.MethodDelete, api.baseUrl + "/notification?id=" + notificationId, &apiResponse{})
 }
